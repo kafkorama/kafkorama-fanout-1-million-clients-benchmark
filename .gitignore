@@ -1,0 +1,4 @@
+gateway/logs/all/*
+vpc-variables.sh
+*.pem
+**/.DS_Store
