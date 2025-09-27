@@ -44,7 +44,7 @@ fi
 
 # Download and extract Kafkorama Gateway
 KAFKORAMA_GATEWAY="6.0.24"
-KAFKORAMA_GATEWAY_VERSION="6.0.24-build20250925"
+KAFKORAMA_GATEWAY_VERSION="6.0.24-build20250927"
 KAFKORAMA_GATEWAY_PACKAGE="kafkorama-gateway-${KAFKORAMA_GATEWAY_VERSION}.tar.gz"
 if [[ ! -d "$KAFKORAMA_GATEWAY_VERSION" ]]; then
     wget "https://kafkorama.com/releases/${KAFKORAMA_GATEWAY}/${KAFKORAMA_GATEWAY_PACKAGE}" || { echo "Failed to download Kafkorama Gateway"; exit 1; }
