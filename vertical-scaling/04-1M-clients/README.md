@@ -85,7 +85,7 @@ aws ec2 describe-instances --filters "Name=tag:name,Values=kafka-machine" --quer
 
 Connect to machine using command from bellow and the ip address you got from the previous command
 ```bash
-ssh -A -i k-g-benchmark-key.pem admin@54.242.52.120
+ssh -A -i k-g-benchmark-key.pem admin@54.162.182.167
 ```
 
 Install git and clone benchmark repository
@@ -152,7 +152,7 @@ cd /home/admin/kafkorama-fanout-1-million-clients-benchmark/commons/benchpub/mig
 
 #### Create Gateway Machine EC2 instance machine of type c6a.8xlarge
 ```bash
-aws ec2 run-instances --image-id ami-058bd2d568351da34 --count 1 --instance-type c6a.8xlarge --key-name kafkorama-gateway-benchmark-key --security-group-ids $SECURITY_GROUP_ID --subnet-id $PUBLIC_SUBNET_ID --private-ip-address 10.0.1.20 --associate-public-ip-address --placement "GroupName = kafkorama-gateway-benchmark" --tag-specifications 'ResourceType=instance,Tags=[{Key=name,Value=gateway-machine}]'
+aws ec2 run-instances --image-id ami-058bd2d568351da34 --count 1 --instance-type c5n.9xlarge --key-name kafkorama-gateway-benchmark-key --security-group-ids $SECURITY_GROUP_ID --subnet-id $PUBLIC_SUBNET_ID --private-ip-address 10.0.1.20 --associate-public-ip-address --placement "GroupName = kafkorama-gateway-benchmark" --tag-specifications 'ResourceType=instance,Tags=[{Key=name,Value=gateway-machine}]'
 ```
 
 Get instance public ip
@@ -164,7 +164,7 @@ aws ec2 describe-instances --filters "Name=tag:name,Values=gateway-machine" --qu
 Connect to machine using command from bellow and the ip address you got from the previous command
 
 ```bash
-ssh -A -i k-g-benchmark-key.pem admin@34.207.196.213
+ssh -A -i k-g-benchmark-key.pem admin@34.207.196.87
 ```
 
 Install git and clone benchmark repository
@@ -222,10 +222,10 @@ Connect to machine using command from bellow and the ip address you got from the
 
 ```bash
 # first machine
-ssh -A -i k-g-benchmark-key.pem admin@18.232.58.212
+ssh -A -i k-g-benchmark-key.pem admin@52.90.15.213
 
 # second machine
-ssh -A -i k-g-benchmark-key.pem admin@18.234.243.228
+ssh -A -i k-g-benchmark-key.pem admin@54.80.219.129
 ```
 
 Install git and clone benchmark repository

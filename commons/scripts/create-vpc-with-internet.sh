@@ -11,8 +11,8 @@ VPC_NAME="k-g-cluster"
 VPC_CIDR="10.0.0.0/16"
 PUBLIC_SUBNET_CIDR="10.0.1.0/24"
 PRIVATE_SUBNET_CIDR="10.0.2.0/24"
-AVAILABILITY_ZONE="us-east-1b"
-PRIVATE_AZ="us-east-1b"
+AVAILABILITY_ZONE="us-east-1a"
+PRIVATE_AZ="us-east-1a"
 
 echo "Creating VPC infrastructure..."
 

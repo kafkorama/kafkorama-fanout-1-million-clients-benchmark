@@ -87,7 +87,7 @@ aws ec2 describe-instances --filters "Name=tag:name,Values=kafka-machine" --quer
 
 Connect to machine using command from bellow and the ip address you got from the previous command
 ```bash
-ssh -A -i k-g-benchmark-key.pem admin@13.223.78.196
+ssh -A -i k-g-benchmark-key.pem admin@54.210.21.97
 ```
 
 Install git and clone benchmark repository
@@ -156,16 +156,16 @@ cd /home/admin/kafkorama-fanout-1-million-clients-benchmark/commons/benchpub/mig
 
 ```bash
 # Create first gateway machine
-aws ec2 run-instances --image-id ami-058bd2d568351da34 --count 1 --instance-type c6a.2xlarge --key-name kafkorama-gateway-benchmark-key --security-group-ids $SECURITY_GROUP_ID --subnet-id $PUBLIC_SUBNET_ID --private-ip-address 10.0.1.20 --associate-public-ip-address --placement "GroupName = kafkorama-gateway-benchmark" --tag-specifications 'ResourceType=instance,Tags=[{Key=name,Value=gateway-machine}]'
+aws ec2 run-instances --image-id ami-058bd2d568351da34 --count 1 --instance-type c5n.2xlarge --key-name kafkorama-gateway-benchmark-key --security-group-ids $SECURITY_GROUP_ID --subnet-id $PUBLIC_SUBNET_ID --private-ip-address 10.0.1.20 --associate-public-ip-address --placement "GroupName = kafkorama-gateway-benchmark" --tag-specifications 'ResourceType=instance,Tags=[{Key=name,Value=gateway-machine}]'
 
 # Create second gateway machine
-aws ec2 run-instances --image-id ami-058bd2d568351da34 --count 1 --instance-type c6a.2xlarge --key-name kafkorama-gateway-benchmark-key --security-group-ids $SECURITY_GROUP_ID --subnet-id $PUBLIC_SUBNET_ID --private-ip-address 10.0.1.30 --associate-public-ip-address --placement "GroupName = kafkorama-gateway-benchmark" --tag-specifications 'ResourceType=instance,Tags=[{Key=name,Value=gateway2-machine}]'
+aws ec2 run-instances --image-id ami-058bd2d568351da34 --count 1 --instance-type c5n.2xlarge --key-name kafkorama-gateway-benchmark-key --security-group-ids $SECURITY_GROUP_ID --subnet-id $PUBLIC_SUBNET_ID --private-ip-address 10.0.1.30 --associate-public-ip-address --placement "GroupName = kafkorama-gateway-benchmark" --tag-specifications 'ResourceType=instance,Tags=[{Key=name,Value=gateway2-machine}]'
 
 # Create third gateway machine
-aws ec2 run-instances --image-id ami-058bd2d568351da34 --count 1 --instance-type c6a.2xlarge --key-name kafkorama-gateway-benchmark-key --security-group-ids $SECURITY_GROUP_ID --subnet-id $PUBLIC_SUBNET_ID --private-ip-address 10.0.1.40 --associate-public-ip-address --placement "GroupName = kafkorama-gateway-benchmark" --tag-specifications 'ResourceType=instance,Tags=[{Key=name,Value=gateway3-machine}]'
+aws ec2 run-instances --image-id ami-058bd2d568351da34 --count 1 --instance-type c5n.2xlarge --key-name kafkorama-gateway-benchmark-key --security-group-ids $SECURITY_GROUP_ID --subnet-id $PUBLIC_SUBNET_ID --private-ip-address 10.0.1.40 --associate-public-ip-address --placement "GroupName = kafkorama-gateway-benchmark" --tag-specifications 'ResourceType=instance,Tags=[{Key=name,Value=gateway3-machine}]'
 
 # Create fourth gateway machine
-aws ec2 run-instances --image-id ami-058bd2d568351da34 --count 1 --instance-type c6a.2xlarge --key-name kafkorama-gateway-benchmark-key --security-group-ids $SECURITY_GROUP_ID --subnet-id $PUBLIC_SUBNET_ID --private-ip-address 10.0.1.50 --associate-public-ip-address --placement "GroupName = kafkorama-gateway-benchmark" --tag-specifications 'ResourceType=instance,Tags=[{Key=name,Value=gateway4-machine}]'
+aws ec2 run-instances --image-id ami-058bd2d568351da34 --count 1 --instance-type c5n.2xlarge --key-name kafkorama-gateway-benchmark-key --security-group-ids $SECURITY_GROUP_ID --subnet-id $PUBLIC_SUBNET_ID --private-ip-address 10.0.1.50 --associate-public-ip-address --placement "GroupName = kafkorama-gateway-benchmark" --tag-specifications 'ResourceType=instance,Tags=[{Key=name,Value=gateway4-machine}]'
 
 ```
 
