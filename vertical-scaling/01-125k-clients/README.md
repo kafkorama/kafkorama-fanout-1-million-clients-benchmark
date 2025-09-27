@@ -9,14 +9,14 @@ This benchmark simulates a realistic messaging scenario where:
 - **10,000 unique subjects** are distributed across all clients (12 clients per subject)
 - **10,000 messages per second** are published through Apache Kafka
 - **512-byte messages** provide realistic payload sizes
-- All components run on **AWS EC2 c6a instances** in a cluster placement group for optimal network performance
+- All components run on **AWS EC2 instances of type compute-optimized** in a cluster placement group for optimal network performance
 
 ## Architecture
 
 The benchmark uses a 3-tier architecture:
 
 1. **Kafka Machine (c6a.4xlarge)**: Runs Apache Kafka broker and message publisher
-2. **Gateway Machine (c6a.xlarge)**: Runs Kafkorama Gateway handling WebSocket connections
+2. **Gateway Machine (c5n.xlarge)**: Runs Kafkorama Gateway handling WebSocket connections
 3. **Clients Machine (c6a.8xlarge)**: Runs 125,000 WebSocket subscribers
 
 All machines are deployed in the same AWS placement group to minimize network latency and maximize throughput.
@@ -149,9 +149,9 @@ cd /home/admin/kafkorama-fanout-1-million-clients-benchmark/commons/benchpub/mig
 
 ## Gateway setup
 
-#### Create Gateway Machine EC2 instance machine of type c6a.xlarge
+#### Create Gateway Machine EC2 instance machine of type c5n.xlarge
 
-Create one EC2 instance of type c6a.xlarge where the gateway will run
+Create one EC2 instance of type c5n.xlarge where the gateway will run
 
 ```bash
 aws ec2 run-instances --image-id ami-058bd2d568351da34 --count 1 --instance-type c5n.xlarge --key-name kafkorama-gateway-benchmark-key --security-group-ids $SECURITY_GROUP_ID --subnet-id $PUBLIC_SUBNET_ID --private-ip-address 10.0.1.20 --associate-public-ip-address --placement "GroupName = kafkorama-gateway-benchmark" --tag-specifications 'ResourceType=instance,Tags=[{Key=name,Value=gateway-machine}]'

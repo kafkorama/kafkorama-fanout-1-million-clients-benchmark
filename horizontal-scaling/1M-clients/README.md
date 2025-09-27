@@ -10,14 +10,14 @@ This cluster benchmark simulates an enterprise-scale messaging scenario where:
 - **10,000 unique subjects** are distributed across all clients (100 clients per subject)
 - **10,000 messages per second** are published through Apache Kafka
 - **512-byte messages** provide realistic payload sizes
-- All components run on **AWS EC2 c6a instances** in a cluster placement group for optimal network performance
+- All components run on **AWS EC2 instances of type compute-optimized** in a cluster placement group for optimal network performance
 
 ## Architecture
 
 The benchmark uses a distributed 3-tier architecture:
 
 1. **Kafka Machine (c6a.4xlarge)**: Runs Apache Kafka broker and message publisher
-2. **Gateway Cluster (4x c6a.2xlarge)**: Four gateway nodes handling WebSocket connections
+2. **Gateway Cluster (4x c5n.2xlarge)**: Four gateway nodes handling WebSocket connections
 3. **Client Machines (2x c6a.8xlarge)**: Distribute 1M WebSocket subscribers across all gateways
 
 All machines are deployed in the same AWS placement group to minimize network latency and maximize throughput between cluster nodes.
@@ -152,7 +152,7 @@ cd /home/admin/kafkorama-fanout-1-million-clients-benchmark/commons/benchpub/mig
 
 ## Gateway cluster setup
 
-#### Create four Gateway EC2 instance machines of type c6a.2xlarge
+#### Create four Gateway EC2 instance machines of type c5n.2xlarge
 
 ```bash
 # Create first gateway machine
