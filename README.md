@@ -16,7 +16,7 @@ Now imagine applying Jeff Bezos's famous API-first mandate to Kafka. Each Kafka 
 
 Such a hub of Streaming APIs would offer a *panorama* of the essential streams across all Kafka clusters in the organization (hence the name *Kafkorama*).
 
-Of course, an API hub is not a new concept — it already exists in traditional API Management for REST APIs. This naturally leads to the idea of a *streaming-based API management for Apache Kafka*.
+Of course, an API hub is not a new concept — it already exists in traditional API Management for REST APIs. This naturally leads to the idea of *API Management for Apache Kafka*, dealing with publish/subscribe streaming APIs rather than request/response REST APIs.
 
 But just like in traditional API Management, a hub alone is not enough. To make APIs secure, manageable, and scalable, you also need a *Gateway* — in this case, a *streaming-based Gateway* to expose Kafka's real-time data to end-user apps.
 
