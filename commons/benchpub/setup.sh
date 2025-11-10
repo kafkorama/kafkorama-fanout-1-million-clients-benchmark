@@ -40,7 +40,7 @@ else
 fi
 
 # Download and extract Kafka
-MIGRATORYDATA_BENCHPUB_VERSION="migratorydata-benchpub-6.0-build20250924.tar.gz"
+MIGRATORYDATA_BENCHPUB_VERSION="migratorydata-benchpub-6.0-build20251110.tar.gz"
 wget "https://kafkorama.com/releases/bench/benchpub/${MIGRATORYDATA_BENCHPUB_VERSION}" || { echo "Failed to download MigratoryData Benchpub"; exit 1; }
 tar zxvf "${MIGRATORYDATA_BENCHPUB_VERSION}" || { echo "Failed to extract MigratoryData Benchpub"; exit 1; }
 rm "${MIGRATORYDATA_BENCHPUB_VERSION}"  # Clean up
@@ -49,6 +49,12 @@ if [[ -f "migratorydata-benchpub.conf" ]]; then
     cp migratorydata-benchpub.conf migratorydata-benchpub/migratorydata-benchpub.conf
 else
     echo "Warning: migratorydata-benchpub.conf not found"
+fi
+
+if [[ -f "config.properties" ]]; then
+    cp config.properties migratorydata-benchpub/config.properties
+else
+    echo "Warning: config.properties not found"
 fi
 
 # Update hosts file
