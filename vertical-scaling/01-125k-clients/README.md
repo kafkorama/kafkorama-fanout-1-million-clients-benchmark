@@ -59,21 +59,11 @@ source ./commons/scripts/create-vpc-with-internet.sh
 
 ## Kafka and publisher setup
 
-#### Create KAFKA and Publishers EC2 machine
+#### Create Publishers EC2 machine
 
 Create one EC2 instance of type c6a.4xlarge which will run Kafka and the publisher
 ```bash
-aws ec2 run-instances --image-id ami-058bd2d568351da34 --count 1 --instance-type c6a.4xlarge --key-name kafkorama-gateway-benchmark-key --security-group-ids $SECURITY_GROUP_ID --subnet-id $PUBLIC_SUBNET_ID --associate-public-ip-address --private-ip-address 10.0.1.10 --placement "GroupName = kafkorama-gateway-benchmark" --tag-specifications 'ResourceType=instance,Tags=[{Key=name,Value=kafka-machine}]'  --block-device-mappings '[
-    {
-      "DeviceName": "/dev/xvda",
-      "Ebs": {
-        "VolumeSize": 100,
-        "VolumeType": "gp3",
-        "DeleteOnTermination": true,
-        "Encrypted": false
-      }
-    }
-  ]'
+aws ec2 run-instances --image-id ami-058bd2d568351da34 --count 1 --instance-type c6a.4xlarge --key-name kafkorama-gateway-benchmark-key --security-group-ids $SECURITY_GROUP_ID --subnet-id $PUBLIC_SUBNET_ID --associate-public-ip-address --private-ip-address 10.0.1.10 --placement "GroupName = kafkorama-gateway-benchmark" --tag-specifications 'ResourceType=instance,Tags=[{Key=name,Value=kafka-machine}]'
 ```
 
 Get instance public ip
@@ -84,29 +74,14 @@ aws ec2 describe-instances --filters "Name=tag:name,Values=kafka-machine" --quer
 
 Connect to machine using command from bellow and the ip address you got from the previous command
 ```bash
-ssh -A -i k-g-benchmark-key.pem admin@13.217.62.228
+ssh -A -i k-g-benchmark-key.pem admin@44.220.141.199
 ```
 
 Install git and clone benchmark repository
 
 ```bash
 sudo apt update && sudo apt install git -y
-git clone git@github.com:kafkorama/kafkorama-fanout-1-million-clients-benchmark.git && cd kafkorama-fanout-1-million-clients-benchmark/
-```
-
-Become root user and install java and kafka
-```bash
-sudo -i
-
-cd /home/admin/kafkorama-fanout-1-million-clients-benchmark/commons/kafka
-chmod a+x setup.sh && ./setup.sh
-```
-
-Start kafka server using `start.sh` script
-
-```bash
-cd /home/admin/kafkorama-fanout-1-million-clients-benchmark/commons/kafka/kafka_2.12-3.9.1
-chmod a+x start.sh && ./start.sh
+git clone git@github.com:kafkorama/kafkorama-fanout-1-million-clients-benchmark.git && cd kafkorama-fanout-1-million-clients-benchmark/ && git checkout confluent
 ```
 
 Additionally you can install grafana and prometheus to monitor kafkorama gateway
@@ -147,6 +122,8 @@ cd /home/admin/kafkorama-fanout-1-million-clients-benchmark/commons/benchpub/mig
 ./start-migratorydata-benchpub.sh
 ```
 
+Update the config.properties file to point to the confluent kafka cluster.
+
 ## Gateway setup
 
 #### Create Gateway Machine EC2 instance machine of type c5n.xlarge
@@ -166,14 +143,14 @@ aws ec2 describe-instances --filters "Name=tag:name,Values=gateway-machine" --qu
 Connect to machine using command from bellow and the ip address you got from the previous command
 
 ```bash
-ssh -A -i k-g-benchmark-key.pem admin@54.208.39.180
+ssh -A -i k-g-benchmark-key.pem admin@35.172.185.20
 ```
 
 Install git and clone benchmark repository
 
 ```bash
 sudo apt update && sudo apt install git -y
-git clone git@github.com:kafkorama/kafkorama-fanout-1-million-clients-benchmark.git && cd kafkorama-fanout-1-million-clients-benchmark/
+git clone git@github.com:kafkorama/kafkorama-fanout-1-million-clients-benchmark.git && cd kafkorama-fanout-1-million-clients-benchmark/ && git checkout confluent
 ```
 
 
@@ -191,6 +168,8 @@ To run the gateway run the following command on each gateway machine
 cd /home/admin/kafkorama-fanout-1-million-clients-benchmark/vertical-scaling/01-125k-clients/configs/gateway/kafkorama-gateway
 ./start-kafkorama-gateway.sh
 ```
+
+Before starting configure the kafkorama gateway to connect to the confluent kafka cluster. Update the `kafkorama-gateway/addons/kafka/consumer.properties` & producer.properties file with the credentials provided by confluent.
 
 ## Clients setup
 
@@ -212,14 +191,14 @@ aws ec2 describe-instances --filters "Name=tag:name,Values=clients-machine" --qu
 Connect to machine using command from bellow and the ip address you got from the previous command
 
 ```bash
-ssh -A -i k-g-benchmark-key.pem admin@3.92.245.226
+ssh -A -i k-g-benchmark-key.pem admin@98.88.26.80
 ```
 
 Install git and clone benchmark repository
 
 ```bash
 sudo apt update && sudo apt install git -y
-git clone git@github.com:kafkorama/kafkorama-fanout-1-million-clients-benchmark.git && cd kafkorama-fanout-1-million-clients-benchmark/
+git clone git@github.com:kafkorama/kafkorama-fanout-1-million-clients-benchmark.git && cd kafkorama-fanout-1-million-clients-benchmark/ && git checkout confluent
 ```
 
 Become root user and setup the MigratoryData benchsub clients 
@@ -228,7 +207,7 @@ Become root user and setup the MigratoryData benchsub clients
 sudo -i
 
 cd /home/admin/kafkorama-fanout-1-million-clients-benchmark/vertical-scaling/01-125k-clients/configs/benchsub
-chmod a+x setup.sh && ./setup.sh <license
+chmod a+x setup.sh && ./setup.sh <license>
 ```
 
 Run the following command to start the clients

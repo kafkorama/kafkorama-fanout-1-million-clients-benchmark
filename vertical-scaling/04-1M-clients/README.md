@@ -85,29 +85,14 @@ aws ec2 describe-instances --filters "Name=tag:name,Values=kafka-machine" --quer
 
 Connect to machine using command from bellow and the ip address you got from the previous command
 ```bash
-ssh -A -i k-g-benchmark-key.pem admin@54.162.182.167
+ssh -A -i k-g-benchmark-key.pem admin@3.236.56.197
 ```
 
 Install git and clone benchmark repository
 
 ```bash
 sudo apt update && sudo apt install git -y
-git clone git@github.com:kafkorama/kafkorama-fanout-1-million-clients-benchmark.git && cd kafkorama-fanout-1-million-clients-benchmark/
-```
-
-Become root user and install java and kafka
-```bash
-sudo -i
-
-cd /home/admin/kafkorama-fanout-1-million-clients-benchmark/commons/kafka
-chmod a+x setup.sh && ./setup.sh
-```
-
-Start kafka server using `start.sh` script
-
-```bash
-cd /home/admin/kafkorama-fanout-1-million-clients-benchmark/commons/kafka/kafka_2.12-3.9.1
-chmod a+x start.sh && ./start.sh
+git clone git@github.com:kafkorama/kafkorama-fanout-1-million-clients-benchmark.git && cd kafkorama-fanout-1-million-clients-benchmark/ && git checkout confluent
 ```
 
 Additionally you can install grafana and prometheus to monitor kafkorama gateway
@@ -164,7 +149,7 @@ aws ec2 describe-instances --filters "Name=tag:name,Values=gateway-machine" --qu
 Connect to machine using command from bellow and the ip address you got from the previous command
 
 ```bash
-ssh -A -i k-g-benchmark-key.pem admin@34.207.196.87
+ssh -A -i k-g-benchmark-key.pem admin@44.211.83.122
 ```
 
 Install git and clone benchmark repository
@@ -222,10 +207,10 @@ Connect to machine using command from bellow and the ip address you got from the
 
 ```bash
 # first machine
-ssh -A -i k-g-benchmark-key.pem admin@52.90.15.213
+ssh -A -i k-g-benchmark-key.pem admin@13.220.15.214
 
 # second machine
-ssh -A -i k-g-benchmark-key.pem admin@54.80.219.129
+ssh -A -i k-g-benchmark-key.pem admin@98.93.48.95
 ```
 
 Install git and clone benchmark repository

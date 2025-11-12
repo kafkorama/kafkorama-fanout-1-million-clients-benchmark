@@ -61,3 +61,17 @@ fi
 if ! grep -q "10.0.1.10 kafka" /etc/hosts; then
     echo "10.0.1.10 kafka" >> /etc/hosts
 fi
+
+# Update hosts file
+if ! grep -q "10.0.1.20 gateway" /etc/hosts; then
+    echo "10.0.1.20 gateway" >> /etc/hosts
+fi
+if ! grep -q "10.0.1.30 gateway2" /etc/hosts; then
+    echo "10.0.1.30 gateway2" >> /etc/hosts
+fi
+if ! grep -q "10.0.1.40 gateway3" /etc/hosts; then
+    echo "10.0.1.40 gateway3" >> /etc/hosts
+fi
+if ! grep -q "10.0.1.50 gateway4" /etc/hosts; then
+    echo "10.0.1.50 gateway4" >> /etc/hosts
+fi

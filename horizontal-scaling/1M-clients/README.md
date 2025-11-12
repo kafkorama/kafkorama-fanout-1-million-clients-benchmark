@@ -87,14 +87,14 @@ aws ec2 describe-instances --filters "Name=tag:name,Values=kafka-machine" --quer
 
 Connect to machine using command from bellow and the ip address you got from the previous command
 ```bash
-ssh -A -i k-g-benchmark-key.pem admin@54.210.21.97
+ssh -A -i k-g-benchmark-key.pem admin@13.217.196.72
 ```
 
 Install git and clone benchmark repository
 
 ```bash
 sudo apt update && sudo apt install git -y
-git clone git@github.com:kafkorama/kafkorama-fanout-1-million-clients-benchmark.git && cd kafkorama-fanout-1-million-clients-benchmark/
+git clone git@github.com:kafkorama/kafkorama-fanout-1-million-clients-benchmark.git && cd kafkorama-fanout-1-million-clients-benchmark/ && git checkout confluent
 ```
 
 Become root user and install java and kafka
