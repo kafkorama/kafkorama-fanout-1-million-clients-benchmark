@@ -16,7 +16,7 @@ This cluster benchmark simulates an enterprise-scale messaging scenario where:
 
 The benchmark uses a distributed 3-tier architecture:
 
-1. **Kafka Machine (c6a.4xlarge)**: Runs Apache Kafka broker and message publisher
+1. **Publisher Machine (c6a.4xlarge)**: Runs Benchmark publisher and grafana/prometheus for monitoring
 2. **Gateway Cluster (4x c5n.2xlarge)**: Four gateway nodes handling WebSocket connections
 3. **Client Machines (2x c6a.8xlarge)**: Distribute 1M WebSocket subscribers across all gateways
 
@@ -36,7 +36,6 @@ This cluster test validates the system's ability to:
 - Kafkorama Gateway version: 6.0.24
 - MigratoryData Benchmark Publisher version: 2023.21.11
 - MigratoryData Benchmark Subscriber version: 2023.21.11
-- Apache Kafka version: 3.9.1
 
 
 ### Prepare the environment
@@ -60,29 +59,19 @@ chmod a+x commons/scripts/create-vpc-with-internet.sh
 source ./commons/scripts/create-vpc-with-internet.sh
 ```
 
-## Kafka and publisher setup
+## Publisher and grafana/prometheus setup
 
-#### Create KAFKA and Publishers EC2 machine
+#### Create Publisher EC2 machine
 
-Create one EC2 instance of type c6a.4xlarge which will run Kafka and the publisher
+Create one EC2 instance of type c6a.4xlarge which will run the publisher
 ```bash
-aws ec2 run-instances --image-id ami-058bd2d568351da34 --count 1 --instance-type c6a.4xlarge --key-name kafkorama-gateway-benchmark-key --security-group-ids $SECURITY_GROUP_ID --subnet-id $PUBLIC_SUBNET_ID --associate-public-ip-address --private-ip-address 10.0.1.10 --placement "GroupName = kafkorama-gateway-benchmark" --tag-specifications 'ResourceType=instance,Tags=[{Key=name,Value=kafka-machine}]'  --block-device-mappings '[
-    {
-      "DeviceName": "/dev/xvda",
-      "Ebs": {
-        "VolumeSize": 100,
-        "VolumeType": "gp3",
-        "DeleteOnTermination": true,
-        "Encrypted": false
-      }
-    }
-  ]'
+aws ec2 run-instances --image-id ami-058bd2d568351da34 --count 1 --instance-type c6a.4xlarge --key-name kafkorama-gateway-benchmark-key --security-group-ids $SECURITY_GROUP_ID --subnet-id $PUBLIC_SUBNET_ID --associate-public-ip-address --private-ip-address 10.0.1.10 --placement "GroupName = kafkorama-gateway-benchmark" --tag-specifications 'ResourceType=instance,Tags=[{Key=name,Value=publisher-machine}]'
 ```
 
 Get instance public ip
 
 ```bash
-aws ec2 describe-instances --filters "Name=tag:name,Values=kafka-machine" --query "Reservations[].Instances[].PublicIpAddress" --output text
+aws ec2 describe-instances --filters "Name=tag:name,Values=publisher-machine" --query "Reservations[].Instances[].PublicIpAddress" --output text
 ```
 
 Connect to machine using command from bellow and the ip address you got from the previous command
@@ -97,22 +86,7 @@ sudo apt update && sudo apt install git -y
 git clone git@github.com:kafkorama/kafkorama-fanout-1-million-clients-benchmark.git && cd kafkorama-fanout-1-million-clients-benchmark/ && git checkout confluent
 ```
 
-Become root user and install java and kafka
-```bash
-sudo -i
-
-cd /home/admin/kafkorama-fanout-1-million-clients-benchmark/commons/kafka
-chmod a+x setup.sh && ./setup.sh
-```
-
-Start kafka server using `start.sh` script
-
-```bash
-cd /home/admin/kafkorama-fanout-1-million-clients-benchmark/commons/kafka/kafka_2.12-3.9.1
-chmod a+x start.sh && ./start.sh
-```
-
-Additionally you can install grafana and prometheus to monitor kafkorama gateway
+Install grafana and prometheus to monitor kafkorama gateway
 
 ```bash
 sudo -i
@@ -121,7 +95,7 @@ cd /home/admin/kafkorama-fanout-1-million-clients-benchmark/commons/scripts
 chmod a+x install-grafana.sh && ./install-grafana.sh
 ```
 
-- Access Grafana at: `http://<kafka-machine-public-ip>:3000`
+- Access Grafana at: `http://<publisher-machine-public-ip>:3000`
 - Default credentials:
   - Username: `admin`
   - Password: `admin`
@@ -132,7 +106,7 @@ Go to Connections and add a new data source of type Prometheus with the followin
 
 Go to Dashboard and import the dashboard using the following id `14004` to monitor kafkorama gateway. Select Prometheus as data source.
 
-Open another terminal and instal MigratoryData Benchpub
+Install Java and MigratoryData Benchpub
 
 ```bash
 sudo -i
@@ -149,6 +123,8 @@ sudo -i
 cd /home/admin/kafkorama-fanout-1-million-clients-benchmark/commons/benchpub/migratorydata-benchpub
 ./start-migratorydata-benchpub.sh
 ```
+
+> Update the `migratorydata-benchpub/config.properties` file to point to the confluent kafka cluster.
 
 ## Gateway cluster setup
 
@@ -194,7 +170,7 @@ Install git and clone benchmark repository on each gateway machine
 
 ```bash
 sudo apt update && sudo apt install git -y
-git clone git@github.com:kafkorama/kafkorama-fanout-1-million-clients-benchmark.git && cd kafkorama-fanout-1-million-clients-benchmark/
+git clone git@github.com:kafkorama/kafkorama-fanout-1-million-clients-benchmark.git && cd kafkorama-fanout-1-million-clients-benchmark/ && git checkout confluent
 ```
 
 
@@ -205,6 +181,8 @@ sudo -i
 cd /home/admin/kafkorama-fanout-1-million-clients-benchmark/horizontal-scaling/1M-clients/configs/gateway
 chmod a+x setup.sh && ./setup.sh <license_key>
 ```
+
+> Before starting configure the kafkorama gateway to connect to the confluent kafka cluster. Update the `kafkorama-gateway/addons/kafka/consumer.properties` & `kafkorama-gateway/addons/kafka/producer.properties` file with the credentials provided by confluent.
 
 To run the gateway run the following command on each gateway machine
 ```bash
@@ -243,23 +221,25 @@ Connect to machine using command from bellow and the ip address you got from the
 ssh -A -i k-g-benchmark-key.pem admin@34.207.137.75
 ```
 
+
+## Connect to first machine using ssh terminal and run the following command to install MigratoryData Benchsub and start the first 500k clients
+
 Install git and clone benchmark repository
 
 ```bash
 sudo apt update && sudo apt install git -y
-git clone git@github.com:kafkorama/kafkorama-fanout-1-million-clients-benchmark.git && cd kafkorama-fanout-1-million-clients-benchmark/
+git clone git@github.com:kafkorama/kafkorama-fanout-1-million-clients-benchmark.git && cd kafkorama-fanout-1-million-clients-benchmark/ && git checkout confluent
 ```
 
-Become root user and setup the MigratoryData benchsub clients 
+Become root user and setup the first 250k clients 
 
 ```bash
 sudo -i
-cd /home/admin/kafkorama-fanout-1-million-clients-benchmark/horizontal-scaling/1M-clients/configs/benchsub-x
+cd /home/admin/kafkorama-fanout-1-million-clients-benchmark/horizontal-scaling/1M-clients/configs/benchsub-1
 chmod a+x setup.sh && ./setup.sh <license_key>
 ```
 
-
-Connect to first machine using ssh terminal and run the following command to start the first 500k clients
+Start the first 250k clients
 
 ```bash
 ssh -A -i k-g-benchmark-key.pem admin@eclients_machine_public_ip-1
@@ -267,11 +247,20 @@ ssh -A -i k-g-benchmark-key.pem admin@eclients_machine_public_ip-1
 sudo -i
 cd /home/admin/kafkorama-fanout-1-million-clients-benchmark/horizontal-scaling/1M-clients/configs/benchsub-1/migratorydata-benchsub
 ./start-migratorydata-benchsub.sh
+```
 
 
---------
+Become root user and setup the next 250k clients 
 
+```bash
+sudo -i
+cd /home/admin/kafkorama-fanout-1-million-clients-benchmark/horizontal-scaling/1M-clients/configs/benchsub-2
+chmod a+x setup.sh && ./setup.sh <license_key>
+```
 
+Start the next 250k clients
+
+```bash
 ssh -A -i k-g-benchmark-key.pem admin@eclients_machine_public_ip-1
 
 sudo -i
@@ -279,7 +268,26 @@ cd /home/admin/kafkorama-fanout-1-million-clients-benchmark/horizontal-scaling/1
 ./start-migratorydata-benchsub.sh
 ```
 
-Do the same for the second machine to start the other 500k clients
+
+## Do the same for the second machine to start the other 500k clients
+
+
+Install git and clone benchmark repository
+
+```bash
+sudo apt update && sudo apt install git -y
+git clone git@github.com:kafkorama/kafkorama-fanout-1-million-clients-benchmark.git && cd kafkorama-fanout-1-million-clients-benchmark/ && git checkout confluent
+```
+
+Become root user and setup the first 250k clients 
+
+```bash
+sudo -i
+cd /home/admin/kafkorama-fanout-1-million-clients-benchmark/horizontal-scaling/1M-clients/configs/benchsub-3
+chmod a+x setup.sh && ./setup.sh <license_key>
+```
+
+Start the first 250k clients
 
 ```bash
 ssh -A -i k-g-benchmark-key.pem admin@eclients_machine_public_ip-2
@@ -287,9 +295,20 @@ ssh -A -i k-g-benchmark-key.pem admin@eclients_machine_public_ip-2
 sudo -i
 cd /home/admin/kafkorama-fanout-1-million-clients-benchmark/horizontal-scaling/1M-clients/configs/benchsub-3/migratorydata-benchsub
 ./start-migratorydata-benchsub.sh
+```
 
------
 
+Become root user and setup the next 250k clients 
+
+```bash
+sudo -i
+cd /home/admin/kafkorama-fanout-1-million-clients-benchmark/horizontal-scaling/1M-clients/configs/benchsub-4
+chmod a+x setup.sh && ./setup.sh <license_key>
+```
+
+Start the next 250k clients
+
+```bash
 ssh -A -i k-g-benchmark-key.pem admin@eclients_machine_public_ip-2
 
 sudo -i
@@ -297,11 +316,12 @@ cd /home/admin/kafkorama-fanout-1-million-clients-benchmark/horizontal-scaling/1
 ./start-migratorydata-benchsub.sh
 ```
 
+
 #### Cleanup
 
 Delete kafka and publisher EC2 instance
 ```bash
-INSTANCE_ID=$(aws ec2 describe-instances --filters "Name=tag:name,Values=kafka-machine" "Name=instance-state-name,Values=running" --query "Reservations[].Instances[].InstanceId" --output text)
+INSTANCE_ID=$(aws ec2 describe-instances --filters "Name=tag:name,Values=publisher-machine" "Name=instance-state-name,Values=running" --query "Reservations[].Instances[].InstanceId" --output text)
 aws ec2 terminate-instances --instance-ids $INSTANCE_ID
 ```
 
