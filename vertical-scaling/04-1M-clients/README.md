@@ -19,6 +19,7 @@ The benchmark uses a 3-tier architecture:
 2. **Gateway Machine (c5n.9xlarge)**: Runs Kafkorama Gateway handling WebSocket connections
 3. **Clients Machine (c6a.8xlarge)**: Runs 500,000 WebSocket subscribers
 4. **Clients Machine (c6a.8xlarge)**: Runs 500,000 WebSocket subscribers
+5. **Apache Kafka Cluster**: Hosted on Confluent Cloud to provide message brokering
 
 All machines are deployed in the same AWS placement group to minimize network latency and maximize throughput.
 
@@ -37,6 +38,26 @@ This test validates the gateway's ability to:
 
 
 ### Prepare the environment
+
+#### Start Confluent kafka cluster and create topic
+
+Access Confluent cloud at https://confluent.cloud/ and login or create an account.
+
+Create a standard cluster and get the bootstrap servers and api key/secret to be used later to configure Kafkorama Gateway and publisher. The access information will be needed later to configure both the Kafkorama Gateway and the publisher. For Kafkorama Gateway, the configuration files are located in the `kafkorama-gateway/addons/kafka/consumer.properties` and `kafkorama-gateway/addons/kafka/producer.properties` files. For the publisher, the configuration file is located in the `migratorydata-benchpub/config.properties` file.
+
+Define a topic named `u` with `10` partitions and replication factor of 3.
+
+The benchmark uses the default configurations for cluster and topic provided by Confluent. Also the Kafka clients used by Kafkorama Gateway and publisher will use the default configurations.
+
+#### Start Confluent kafka cluster and create topic
+
+Access Confluent cloud at https://confluent.cloud/ and login or create an account.
+
+Create a standard cluster and get the bootstrap servers and api key/secret to be used later to configure Kafkorama Gateway and publisher.
+
+Define a topic named `u` with `10` partitions and replication factor of 3.
+
+The benchmark uses the default configurations for cluster and topic provided by Confluent. Also the Kafka clients used by Kafkorama Gateway and publisher will use the default configurations.
 
 #### Create a placement group where all machines will be placed on the same rack
 ```bash
